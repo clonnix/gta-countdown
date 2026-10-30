@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA VI Countdown</title>
+<meta name="description" content="Live countdown to GTA VI in every region. Releases 19 November 2026 at midnight local time.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky-top: #1a0b2e;
+    --sky-mid: #5b1a5e;
+    --sky-low: #e8456b;
+    --sun: #ffb347;
+    --pink: #ff4fa3;
+    --cyan: #3ee6ff;
+    --text: #fff6ee;
+    --muted: rgba(255, 246, 238, 0.7);
+    --card: rgba(20, 6, 34, 0.6);
+    --card-border: rgba(255, 255, 255, 0.14);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--text);
+    background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 40%, var(--sky-low) 75%, var(--sun) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding: 40px 16px 80px;
+  }
+  .sun {
+    position: fixed; left: 50%; bottom: -18vmin; transform: translateX(-50%);
+    width: 70vmin; height: 70vmin; border-radius: 50%;
+    background: repeating-linear-gradient(180deg, var(--sun) 0 14px, transparent 14px 20px), radial-gradient(circle, #ffd27a, var(--sun));
+    -webkit-mask: linear-gradient(180deg, #000 45%, transparent 100%);
+            mask: linear-gradient(180deg, #000 45%, transparent 100%);
+    opacity: 0.5; z-index: 0; pointer-events: none;
+  }
+  .palms { position: fixed; bottom: 0; left: 0; right: 0; height: 40vh; z-index: 0; pointer-events: none; }
+  .palms svg { position: absolute; bottom: 0; fill: #12051f; }
+  .palms .l { left: -20px; height: 100%; }
+  .palms .r { right: -20px; height: 85%; transform: scaleX(-1); }
+
+  main { position: relative; z-index: 1; margin: 0 auto; max-width: 980px; text-align: center; }
+  .eyebrow { font-size: 0.85rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--cyan); text-shadow: 0 0 12px rgba(62,230,255,.6); }
+  h1 {
+    font-family: "Bebas Neue", Impact, sans-serif;
+    font-size: clamp(4.5rem, 18vw, 10rem); line-height: 0.9; margin: 12px 0 4px;
+    background: linear-gradient(180deg, #fff 10%, var(--pink) 60%, #ff8a3d 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 6px 24px rgba(255,79,163,.45));
+  }
+  .sub { color: var(--muted); font-size: 0.95rem; }
+
+  .picker { margin: 28px auto 0; display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .picker label { font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  select {
+    font: inherit; font-weight: 600; color: var(--text);
+    background: var(--card); border: 1px solid var(--card-border); border-radius: 12px;
+    padding: 10px 14px; min-width: 260px; max-width: 100%;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  select option { background: #1a0b2e; }
+
+  .launch { margin-top: 18px; font-size: clamp(1rem, 3vw, 1.2rem); font-weight: 600; }
+  .launch small { display: block; font-weight: 400; color: var(--muted); font-size: 0.85rem; margin-top: 6px; }
+
+  .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 26px auto 0; max-width: 720px; }
+  .unit { background: var(--card); border: 1px solid var(--card-border); border-radius: 18px; padding: 20px 8px 16px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .num { font-family: "Bebas Neue", Impact, sans-serif; font-size: clamp(2.6rem, 11vw, 5.5rem); line-height: 1; font-variant-numeric: tabular-nums; text-shadow: 0 0 18px rgba(255,79,163,.7); }
+  .label { margin-top: 6px; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+  .out-msg { display: none; margin-top: 26px; }
+  .out-msg h2 { font-family: "Bebas Neue", Impact, sans-serif; font-size: clamp(3rem, 12vw, 6rem); color: var(--cyan); text-shadow: 0 0 24px rgba(62,230,255,.7); }
+  .hero.out .countdown { display: none; }
+  .hero.out .out-msg { display: block; }
+
+  h3 { margin: 56px 0 6px; font-family: "Bebas Neue", Impact, sans-serif; font-size: 2.4rem; letter-spacing: 0.04em; }
+  .hint { color: var(--muted); font-size: 0.85rem; margin-bottom: 18px; }
+
+  .regions { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; text-align: left; }
+  .region {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    font: inherit; color: inherit; text-align: left; cursor: pointer;
+    background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px 14px;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: border-color .15s, transform .15s;
+  }
+  .region:hover { border-color: rgba(255,255,255,.4); transform: translateY(-1px); }
+  .region.sel { border-color: var(--pink); box-shadow: 0 0 0 1px var(--pink), 0 0 18px rgba(255,79,163,.35); }
+  .region .flag { font-size: 1.6rem; line-height: 1; }
+  .region .info { flex: 1; min-width: 0; }
+  .region .name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .region .when { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+  .region .left { font-family: "Bebas Neue", Impact, sans-serif; font-size: 1.5rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .region.live .left { color: var(--cyan); text-shadow: 0 0 10px rgba(62,230,255,.6); }
+
+  footer { margin-top: 36px; font-size: 0.75rem; color: var(--muted); line-height: 1.6; }
+
+  @media (max-width: 480px) {
+    .countdown { gap: 8px; }
+    .unit { border-radius: 14px; padding: 14px 4px 12px; }
+    .label { font-size: 0.6rem; letter-spacing: 0.12em; }
+    select { min-width: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="sun" aria-hidden="true"></div>
+  <div class="palms" aria-hidden="true">
+    <svg class="l" viewBox="0 0 200 400" preserveAspectRatio="xMinYMax meet"><path d="M95 400 C98 300 104 220 118 150 L124 150 C112 220 108 300 110 400 Z"/><path d="M120 150 C80 120 40 130 5 165 C45 140 85 140 118 158 Z"/><path d="M120 150 C90 100 50 85 15 95 C55 100 90 120 117 155 Z"/><path d="M121 150 C125 100 150 70 190 60 C160 85 140 115 125 155 Z"/><path d="M122 152 C160 130 190 140 200 175 C175 150 150 148 124 158 Z"/><path d="M120 150 C110 105 115 70 135 40 C128 80 128 115 124 152 Z"/></svg>
+    <svg class="r" viewBox="0 0 200 400" preserveAspectRatio="xMinYMax meet"><path d="M95 400 C98 300 104 220 118 150 L124 150 C112 220 108 300 110 400 Z"/><path d="M120 150 C80 120 40 130 5 165 C45 140 85 140 118 158 Z"/><path d="M120 150 C90 100 50 85 15 95 C55 100 90 120 117 155 Z"/><path d="M121 150 C125 100 150 70 190 60 C160 85 140 115 125 155 Z"/><path d="M122 152 C160 130 190 140 200 175 C175 150 150 148 124 158 Z"/></svg>
+  </div>
+
+  <main>
+    <section class="hero" id="hero">
+      <p class="eyebrow">Worldwide release</p>
+      <h1>GTA VI</h1>
+      <p class="sub">Thursday 19 November 2026 · midnight local time · PS5 &amp; Xbox Series X|S</p>
+
+      <div class="picker">
+        <label for="tz">Region</label>
+        <select id="tz"></select>
+      </div>
+
+      <p class="launch" id="launch">&nbsp;<small id="launchSub">&nbsp;</small></p>
+
+      <div class="countdown" aria-live="polite">
+        <div class="unit"><div class="num" id="d">--</div><div class="label">Days</div></div>
+        <div class="unit"><div class="num" id="h">--</div><div class="label">Hours</div></div>
+        <div class="unit"><div class="num" id="m">--</div><div class="label">Minutes</div></div>
+        <div class="unit"><div class="num" id="s">--</div><div class="label">Seconds</div></div>
+      </div>
+      <div class="out-msg">
+        <h2>It's out!</h2>
+        <p id="outText">GTA VI is now available here. See you in Leonida.</p>
+      </div>
+    </section>
+
+    <h3>Every region</h3>
+    <p class="hint">In unlock order. Times next to each region are shown in <strong id="viewerTz">your time</strong>. Tap a region to make it the big countdown.</p>
+    <div class="regions" id="regions"></div>
+
+    <footer>
+      Release date confirmed by Take-Two Interactive. The PlayStation Store lists a midnight local-time release; exact unlock times can differ per platform and store.<br>
+      Fan page, not affiliated with Rockstar Games or Take-Two Interactive.
+    </footer>
+  </main>
+
+<script>
+  // Release: 19 Nov 2026, 00:00 local time in each region
+  const REGIONS = [
+    { tz: "Pacific/Auckland",               name: "New Zealand",            flag: "🇳🇿" },
+    { tz: "Australia/Sydney",               name: "Australia (Sydney, Melbourne)", flag: "🇦🇺" },
+    { tz: "Australia/Brisbane",             name: "Australia (Brisbane)",   flag: "🇦🇺" },
+    { tz: "Australia/Adelaide",             name: "Australia (Adelaide)",   flag: "🇦🇺" },
+    { tz: "Australia/Perth",                name: "Australia (Perth)",      flag: "🇦🇺" },
+    { tz: "Asia/Tokyo",                     name: "Japan",                  flag: "🇯🇵" },
+    { tz: "Asia/Seoul",                     name: "South Korea",            flag: "🇰🇷" },
+    { tz: "Asia/Hong_Kong",                 name: "Hong Kong",              flag: "🇭🇰" },
+    { tz: "Asia/Taipei",                    name: "Taiwan",                 flag: "🇹🇼" },
+    { tz: "Asia/Singapore",                 name: "Singapore",              flag: "🇸🇬" },
+    { tz: "Asia/Manila",                    name: "Philippines",            flag: "🇵🇭" },
+    { tz: "Asia/Bangkok",                   name: "Thailand",               flag: "🇹🇭" },
+    { tz: "Asia/Jakarta",                   name: "Indonesia (Jakarta)",    flag: "🇮🇩" },
+    { tz: "Asia/Kolkata",                   name: "India",                  flag: "🇮🇳" },
+    { tz: "Asia/Dubai",                     name: "United Arab Emirates",   flag: "🇦🇪" },
+    { tz: "Asia/Riyadh",                    name: "Saudi Arabia",           flag: "🇸🇦" },
+    { tz: "Europe/Istanbul",                name: "Turkey",                 flag: "🇹🇷" },
+    { tz: "Africa/Johannesburg",            name: "South Africa",           flag: "🇿🇦" },
+    { tz: "Europe/Athens",                  name: "Greece",                 flag: "🇬🇷" },
+    { tz: "Europe/Helsinki",                name: "Finland",                flag: "🇫🇮" },
+    { tz: "Europe/Bucharest",               name: "Romania",                flag: "🇷🇴" },
+    { tz: "Europe/Amsterdam",               name: "Netherlands",            flag: "🇳🇱" },
+    { tz: "Europe/Brussels",                name: "Belgium",                flag: "🇧🇪" },
+    { tz: "Europe/Berlin",                  name: "Germany",                flag: "🇩🇪" },
+    { tz: "Europe/Paris",                   name: "France",                 flag: "🇫🇷" },
+    { tz: "Europe/Madrid",                  name: "Spain",                  flag: "🇪🇸" },
+    { tz: "Europe/Rome",                    name: "Italy",                  flag: "🇮🇹" },
+    { tz: "Europe/Warsaw",                  name: "Poland",                 flag: "🇵🇱" },
+    { tz: "Europe/Stockholm",               name: "Sweden",                 flag: "🇸🇪" },
+    { tz: "Europe/Oslo",                    name: "Norway",                 flag: "🇳🇴" },
+    { tz: "Europe/Copenhagen",              name: "Denmark",                flag: "🇩🇰" },
+    { tz: "Europe/Zurich",                  name: "Switzerland",            flag: "🇨🇭" },
+    { tz: "Europe/Vienna",                  name: "Austria",                flag: "🇦🇹" },
+    { tz: "Africa/Lagos",                   name: "Nigeria",                flag: "🇳🇬" },
+    { tz: "Europe/London",                  name: "United Kingdom",         flag: "🇬🇧" },
+    { tz: "Europe/Dublin",                  name: "Ireland",                flag: "🇮🇪" },
+    { tz: "Europe/Lisbon",                  name: "Portugal",               flag: "🇵🇹" },
+    { tz: "America/Sao_Paulo",              name: "Brazil (São Paulo)",     flag: "🇧🇷" },
+    { tz: "America/Argentina/Buenos_Aires", name: "Argentina",              flag: "🇦🇷" },
+    { tz: "America/Santiago",               name: "Chile",                  flag: "🇨🇱" },
+    { tz: "America/Halifax",                name: "Canada (Atlantic)",      flag: "🇨🇦" },
+    { tz: "America/New_York",               name: "US & Canada (Eastern)",  flag: "🇺🇸" },
+    { tz: "America/Bogota",                 name: "Colombia",               flag: "🇨🇴" },
+    { tz: "America/Lima",                   name: "Peru",                   flag: "🇵🇪" },
+    { tz: "America/Chicago",                name: "US & Canada (Central)",  flag: "🇺🇸" },
+    { tz: "America/Mexico_City",            name: "Mexico (Mexico City)",   flag: "🇲🇽" },
+    { tz: "America/Denver",                 name: "US & Canada (Mountain)", flag: "🇺🇸" },
+    { tz: "America/Phoenix",                name: "US (Arizona)",           flag: "🇺🇸" },
+    { tz: "America/Los_Angeles",            name: "US & Canada (Pacific)",  flag: "🇺🇸" },
+    { tz: "America/Anchorage",              name: "US (Alaska)",            flag: "🇺🇸" },
+    { tz: "Pacific/Honolulu",               name: "US (Hawaii)",            flag: "🇺🇸" },
+  ];
+
+  // Offset (ms) of a time zone at a given UTC instant
+  function tzOffset(tz, utcMs) {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz, hourCycle: "h23",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit"
+    }).formatToParts(new Date(utcMs));
+    const p = Object.fromEntries(parts.map(x => [x.type, Number(x.value)]));
+    const asUtc = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+    return asUtc - Math.floor(utcMs / 1000) * 1000;
+  }
+  // UTC instant of 19 Nov 2026 00:00 in a time zone
+  function releaseIn(tz) {
+    const naive = Date.UTC(2026, 10, 19, 0, 0, 0);
+    let t = naive - tzOffset(tz, naive);
+    t = naive - tzOffset(tz, t); // re-check in case of an offset change in between
+    return t;
+  }
+
+  const viewerTz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  REGIONS.forEach(r => r.release = releaseIn(r.tz));
+  REGIONS.sort((a, b) => a.release - b.release);
+
+  // Make sure the viewer's own zone is selectable
+  const known = REGIONS.find(r => r.tz === viewerTz);
+  const options = [];
+  if (!known) options.push({ tz: viewerTz, name: `Your time zone (${viewerTz.replace(/_/g, " ")})`, flag: "📍", release: releaseIn(viewerTz) });
+  options.push(...REGIONS);
+
+  const $ = id => document.getElementById(id);
+  const pad = n => String(n).padStart(2, "0");
+  const viewerFmt = new Intl.DateTimeFormat(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+  // Picker
+  const select = $("tz");
+  options.forEach(r => {
+    const o = document.createElement("option");
+    o.value = r.tz; o.textContent = `${r.flag} ${r.name}`;
+    select.appendChild(o);
+  });
+  const fromUrl = new URLSearchParams(location.search).get("tz");
+  let current = options.find(r => r.tz === fromUrl) || known || options[0];
+  select.value = current.tz;
+  select.addEventListener("change", () => setRegion(select.value));
+
+  function setRegion(tz) {
+    current = options.find(r => r.tz === tz) || current;
+    select.value = current.tz;
+    // Keep ?tz= in the address bar for sharing; skipped where the page runs sandboxed (e.g. previews)
+    try {
+      const url = new URL(location.href); url.searchParams.set("tz", current.tz);
+      history.replaceState(null, "", url);
+    } catch (e) { /* not allowed here, the countdown works without it */ }
+    document.querySelectorAll(".region").forEach(el => el.classList.toggle("sel", el.dataset.tz === current.tz));
+    $("launch").firstChild.textContent = `${current.flag} ${current.name}: 19 Nov 2026, 00:00 local time`;
+    $("launchSub").textContent = current.tz === viewerTz
+      ? "That's your own time zone."
+      : `That's ${viewerFmt.format(current.release)} for you.`;
+    $("outText").textContent = `GTA VI is now available in ${current.name}. See you in Leonida.`;
+    tick();
+  }
+
+  // Region list
+  $("viewerTz").textContent = viewerTz.replace(/_/g, " ");
+  const list = $("regions");
+  REGIONS.forEach(r => {
+    const b = document.createElement("button");
+    b.className = "region"; b.type = "button"; b.dataset.tz = r.tz;
+    b.innerHTML = `<span class="flag">${r.flag}</span>
+      <span class="info"><div class="name"></div><div class="when"></div></span>
+      <span class="left">--</span>`;
+    b.querySelector(".name").textContent = r.name;
+    b.querySelector(".when").textContent = viewerFmt.format(r.release);
+    b.addEventListener("click", () => { setRegion(r.tz); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    r.el = b.querySelector(".left"); r.card = b;
+    list.appendChild(b);
+  });
+
+  function split(ms) {
+    const s = Math.floor(ms / 1000);
+    return { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 };
+  }
+
+  function tick() {
+    const now = Date.now();
+    const diff = current.release - now;
+    const hero = $("hero");
+    if (diff <= 0) {
+      hero.classList.add("out");
+      document.title = "GTA VI is out!";
+    } else {
+      hero.classList.remove("out");
+      const t = split(diff);
+      $("d").textContent = t.d; $("h").textContent = pad(t.h); $("m").textContent = pad(t.m); $("s").textContent = pad(t.s);
+      document.title = `${t.d}d ${pad(t.h)}:${pad(t.m)}:${pad(t.s)} · GTA VI`;
+    }
+    REGIONS.forEach(r => {
+      const left = r.release - now;
+      if (left <= 0) { r.el.textContent = "LIVE"; r.card.classList.add("live"); }
+      else { const t = split(left); r.el.textContent = `${t.d}d ${pad(t.h)}:${pad(t.m)}:${pad(t.s)}`; }
+    });
+  }
+
+  setRegion(current.tz);
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>
